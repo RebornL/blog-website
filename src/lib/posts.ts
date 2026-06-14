@@ -90,3 +90,19 @@ export function getAdjacentPosts(slug: string): {
     next: idx < all.length - 1 ? all[idx + 1] : null,
   };
 }
+
+export function getAllTags(): string[] {
+  const tags = new Set<string>();
+  for (const post of getAllPostMetas()) {
+    for (const tag of post.tags || []) {
+      tags.add(tag);
+    }
+  }
+  return Array.from(tags).sort();
+}
+
+export function getPostsByTag(tag: string): PostMeta[] {
+  return getAllPostMetas().filter(
+    (post) => post.tags && post.tags.some((t) => t.toLowerCase() === tag.toLowerCase())
+  );
+}
