@@ -1,0 +1,45 @@
+---
+title: "深入理解高并发编程读书笔记"
+date: "2022-07-03"
+tags: ["Java", "Concurrency"]
+---
+
+## 线程与线程池
+
+线程：CPU调度的基本单元，本身不拥有系统资源，只是拥有运行时用到的系统资源（程序计数器、寄存器和栈）。相同进程的线程共享进程中所有的资源。
+
+实现方式：
+- Thread类继承
+- Runnable接口实现
+- Callable接口实现
+
+生命周期：
+- NEW：初始化状态，线程被构建，但还没有调用start()方法
+- RUNNABLE：可运行状态，包含运行中状态和就绪状态
+- BLOCKED：阻塞状态，表示该线程需要等待其他线程释放锁或者等待进入synchronized同步状态
+- WAITING：表示等待状态，处理该状态的线程需要等待其他线程对其进行通知或中断等操作，进而进入下一个状态
+- TIME_WAITING：超时等待状态，可以在一定的时间自行返回
+- TERMINATED：终止状态，当前线程执行完毕
+
+线程执行是无序，但是可以使用 `Thread.join()` 方法实现线程之间有序执行。
+
+## Callable
+
+### PrivilegedCallable
+PrivilegedCallable表明Callable对象有某种特权来访问系统的某种资源
+
+### RunnableAdapter
+给定运行的任务和结果，运行给定的任务并返回给定的结果
+
+### TaskCallable
+比较简单，允许设置任务的运行状态
+
+## 两种异步模型
+
+1. **无返回结果的异步模型**：直接将任务丢进线程或线程池中运行，此时无法直接获得任务的执行结果，需要通过回调的方式获取任务的运行结果。
+
+2. **有返回结果的异步模型**：JDK中提供直接返回异步结果的处理方案，最常使用的Future接口或者FutureTask来接收任务的返回结果。
+
+## SimpleDateFormat多线程不安全解决
+
+SimpleDateFormat之所以不安全的原因，在于内部有一个成员变量Calendar，在一个函数方式执行了clear方法和set方法，而Calendar本身非线程安全。比较好的解决方法是使用ThreadLocal，不影响并发。

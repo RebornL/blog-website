@@ -1,0 +1,61 @@
+---
+title: "数据结构与算法--优先队列和堆"
+date: "2018-11-10"
+tags: ["Algorithm", "Data Structure", "Heap", "Priority Queue"]
+---
+
+## 堆
+
+堆是一颗完全二叉树，所有节点的值必须大于等于（或小于等于）其孩子节点的值。
+
+- **最大堆**：父节点 &gt;= 子节点
+- **最小堆**：父节点 &lt;= 子节点
+
+### 数组存储
+
+由于是完全二叉树，可用数组存储。位置 i 的节点：
+- 父节点位置：`(i-1)/2`
+- 左子节点：`2 * i + 1`
+- 右子节点：`2 * i + 2`
+
+### 核心操作
+
+**堆化（向下渗透）PercolateDown：**
+
+```java
+public void PercolateDown(int i) {
+    int l = LeftChild(i), r = RightChild(i);
+    int max = (l != -1 && array[l] > array[i]) ? l : i;
+    if (r != -1 && array[r] > array[max]) max = r;
+    if (max != i) {
+        swap(array, i, max);
+        PercolateDown(max);
+    }
+}
+```
+
+**删除最大元素（根节点）：**
+
+```java
+public int DeleteMax() {
+    int data = array[0];
+    array[0] = array[count - 1];
+    count--;
+    PercolateDown(0);
+    return data;
+}
+```
+
+**插入元素（向上渗透）：**
+
+```java
+public void Insert(int data) {
+    count++;
+    int i = count - 1;
+    while (i >= 0 && data > array[(i-1)/2]) {
+        array[i] = array[(i-1)/2];
+        i = (i-1)/2;
+    }
+    array[i] = data;
+}
+```

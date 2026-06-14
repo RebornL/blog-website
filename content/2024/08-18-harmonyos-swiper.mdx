@@ -1,0 +1,42 @@
+---
+title: "鸿蒙Swiper的使用"
+date: "2024-08-18"
+tags: ["HarmonyOS", "Swiper", "Responsive"]
+---
+
+## 关键接口
+
+1. `displayCount`：展示个数
+2. `nextMargin`：设置后边距，设置下一个漏出的宽度
+3. 监听媒体断点变化：`BreakpointSystem`
+
+## 实现示例
+
+```typescript
+@Component
+export default struct IndexSwiper {
+  @StorageProp('currentBreakpoint') currentBreakpoint: string = 'md';
+
+  @Builder swiperItem(imageSrc: Resource) {
+    Image(imageSrc)
+      .width('100%')
+      .aspectRatio(2.5)
+      .objectFit(ImageFit.Fill)
+  }
+
+  build() {
+    Swiper() {
+      this.swiperItem($r('app.media.ic_public_swiper1'))
+      this.swiperItem($r('app.media.ic_public_swiper2'))
+      this.swiperItem($r('app.media.ic_public_swiper3'))
+    }
+    .autoPlay(true)
+    .indicator(false)
+    .itemSpace(10)
+    .displayCount(this.currentBreakpoint === 'sm' ? 1
+      : (this.currentBreakpoint === 'md' ? 2 : 3))
+    .width('100%')
+    .padding({ left: 12, right: 12, bottom: 16, top: 16 })
+  }
+}
+```

@@ -1,0 +1,57 @@
+---
+title: "Java中线程同步辅助类"
+date: "2019-02-16"
+tags: ["Java", "Concurrency", "AQS"]
+---
+
+## CountDownLatch
+
+线程同步辅助类，用于某些线程工作前先完成某些动作，或某些线程工作完成后进行收尾工作。
+
+- `countDown()`：计数器减一
+- `await()`：当 count 为 0 时，等待的线程被释放
+
+```java
+CountDownLatch cdl = new CountDownLatch(3);
+// 汇总线程等待
+cdl.await();
+// 工作线程完成后 countDown
+cdl.countDown();
+```
+
+## CyclicBarrier
+
+允许一组线程相互等待，直至到达公共屏障点。CyclicBarrier 可被重用。
+
+```java
+CyclicBarrier barrier = new CyclicBarrier(parties);
+// 所有线程在此等待
+barrier.await();
+```
+
+## Semaphore
+
+信号量，控制同时访问的线程个数。
+
+- `acquire()`：获取信号量，count 减一
+- `release()`：释放信号量，count 加一
+
+```java
+Semaphore semaphore = new Semaphore(3);
+semaphore.acquire();
+// 业务操作
+semaphore.release();
+```
+
+## AQS (AbstractQueuedSynchronizer)
+
+构建锁和同步器的框架，底层采用模板方法模式。使用一个 int 成员变量表示同步状态，通过内置 FIFO 队列完成排队工作。
+
+**核心思想**：如果被请求的共享资源空闲，则将当前线程设置为有效的工作线程，并将资源锁定。如果资源被占用，则将线程加入 CLH 队列。
+
+继承 AQS 需覆盖的方法：
+- `tryAcquire(int)`
+- `tryRelease(int)`
+- `tryAcquireShared(int)`
+- `tryReleaseShared(int)`
+- `isHeldExclusively()`

@@ -1,0 +1,67 @@
+---
+title: "Webpack学习使用"
+date: "2016-10-23"
+tags: ["Webpack", "Frontend"]
+---
+
+## Webpack 介绍
+
+Webpack 是前端打包工具，除了打包 js 文件，通过引入各种 loader，可以打包 css、jsx 等，让所有资源变成模块使用。
+
+## 核心属性
+
+### 1. entry
+打包文件的入口。
+
+```javascript
+entry: "./index.js"
+
+// 多入口
+entry: {
+    page1: "./page1/page1.js",
+    page2: "./page2/page2.js"
+}
+```
+
+### 2. output
+打包文件的输出目录，path 必须为绝对路径。
+
+```javascript
+output: {
+    filename: "bundle.js",
+    path: __dirname + "/dist"
+}
+
+// 多文件输出
+output: {
+    filename: "[name].js",
+    path: __dirname + "/dist"
+}
+```
+
+### 3. loaders
+加载器，用于打包 css、png、jsx 等文件。
+
+```javascript
+// Webpack 2
+module: {
+    rules: [
+        {
+            test: /\.css/,
+            use: [
+                { loader: "style-loader" },
+                { loader: "css-loader", options: { modules: true } }
+            ]
+        }
+    ]
+}
+```
+
+### 4. plugins
+实现 loader 不能实现的功能。
+
+```javascript
+plugins: [
+    new webpack.BannerPlugin("Created by Reborn")
+]
+```

@@ -1,0 +1,74 @@
+---
+title: "朴素贝叶斯实战"
+date: "2023-02-12"
+tags: ["Machine Learning", "Naive Bayes", "sklearn"]
+---
+
+## sklearn 中的三种朴素贝叶斯算法
+
+- **高斯朴素贝叶斯**：特征变量是连续变量，符合高斯分布，比如人的身高、物体的长度
+- **多项式朴素贝叶斯**：特征变量是离散变量，符合多项式，在文档分类中特征变量体现在一个单词出现的次数，或者是单词的 TF-IDF 值
+- **伯努利朴素贝叶斯**：特征变量是布尔变量，符合 0-1 分布，在文档分类中特征是单词是否出现
+
+## TF-IDF
+
+- **TF（Term Frequency，词频）**：计算一个单词在文档中出现的次数，认为一个单词的重要和它在文档中出现的次数呈正比
+- **IDF（Inverse Document Frequency，逆向文档频率）**：一个单词在文档中的区分度，认为一个单词出现在文档数越少，就越能通过该单词把该文档和其他文档区分开。IDF 越大，表明该单词的区分度越大
+- **TF-IDF**：词频和逆向文档的乘积，该值表示这个单词在一个文档中出现的次数多，同时又很少出现在其他文档中，这样的单词适合用于分类
+
+## 文档分类流程
+
+1. **基于分词的数据准备**：分词、单词权重计算、去掉停用词
+2. **应用朴素贝叶斯分类器**：通过训练集得到分类器，应用于测试集，与实际情况对比得到准确率
+
+### 模块1：对文档进行分词
+
+```python
+# English
+import nltk
+word_list = nltk.word_tokenize(text)
+nltk.pos_tag(word_list)
+
+# Chinese
+import jieba
+word_list = jieba.cut(word)
+```
+
+### 模块2：加载停用词表
+
+```python
+stop_words = [line.strip() for line in io.open('stop_words.txt').readlines()]
+```
+
+### 模块3：计算单词权重（TF-IDF）
+
+```python
+tf = TfidfVectorizer(stop_words=stop_words, max_df=0.5)
+features = tf.fit_transform(train_contents)
+```
+
+max_df=0.5 代表一个单词在 50% 的文档都出现过，则携带信息非常少，不作为分词统计。
+
+### 模块4：生成朴素贝叶斯分类器
+
+```python
+from sklearn.naive_bayes import MultinomialNB
+clf = MultinomialNB(alpha=0.001).fit(train_features, train_labels)
+```
+
+- alpha=1：Laplace 平滑，通过 +1 方式统计没有出现过的单词概率
+- 0 < alpha < 1：Lidstone 平滑，alpha 越小，迭代次数越多，精度越高
+
+### 模块5：使用分类器做预测
+
+```python
+test_features = tf.transform(test_words_list)
+predicted_labels = clf.predict(test_features)
+```
+
+### 模块6：计算准确率
+
+```python
+from sklearn import metrics
+print(metrics.accuracy_score(test_labels, predicted_labels))
+```

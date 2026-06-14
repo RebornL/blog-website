@@ -1,0 +1,36 @@
+---
+title: "【转载】使用 .gitignore 忽略 Git 仓库中的文件"
+date: "2017-02-22"
+tags: ["Git", "GitHub", ".gitignore"]
+---
+
+## .gitignore
+
+在 Git 中，使用 `.gitignore` 文件可以指定哪些文件不被提交到仓库。
+
+## 忽略格式
+
+```
+# 注释
+*.a            # 忽略所有 .a 结尾的文件
+!lib.a         # 不忽略 lib.a 文件
+/TODO          # 忽略根目录下的 TODO 文件
+build/         # 忽略 build/ 目录下所有文件
+doc/*.txt      # 忽略 doc/notes.txt，不包括 doc/server/arch.txt
+```
+
+## 创建方法
+
+### 从 GitHub 获取
+`https://github.com/github/gitignore.git` 上有各种项目的 `.gitignore` 模板。
+
+### 通过 gitignore.io（推荐）
+
+配置终端别名：
+
+```bash
+echo "function gi() { curl -L -s https://www.gitignore.io/api/\$@ ;}" >> ~/.zshrc && source ~/.zshrc
+
+# 使用
+gi swift > .gitignore
+```

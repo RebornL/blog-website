@@ -1,0 +1,76 @@
+---
+title: "Claude Code Slash Commands 参考指南"
+date: "2026-04-13"
+tags: ["Claude Code", "Tool", "Reference"]
+---
+
+## Slash Commands 概览
+
+Slash command 是在 Claude Code 交互式会话中用来控制行为的快捷方式，分为四类：
+
+| 类型 | 说明 |
+| --- | --- |
+| 内置命令 | Claude Code 自带，如 `/help`、`/clear`、`/model` |
+| Skills | 自定义命令，基于 `.claude/skills/` 中的 `SKILL.md` 文件 |
+| 插件命令 | 来自已安装插件 |
+| MCP prompts | 来自 MCP server |
+
+## 会话与上下文管理
+
+| 命令 | 作用 |
+| --- | --- |
+| `/clear` | 清空对话 |
+| `/compact [instructions]` | 压缩对话，可附带聚焦指令 |
+| `/context` | 用彩色网格可视化上下文占用 |
+| `/resume [session]` | 恢复对话 |
+| `/rewind` | 回退对话和/或代码 |
+| `/branch [name]` | 将当前对话分支到新会话 |
+
+## 模型与性能
+
+| 命令 | 作用 |
+| --- | --- |
+| `/model [model]` | 选择模型 |
+| `/effort [low\|medium\|high\|max\|auto]` | 设置推理强度 |
+| `/cost` | 查看 token 使用统计 |
+| `/fast [on\|off]` | 切换快速模式 |
+
+## 开发流程
+
+| 命令 | 作用 |
+| --- | --- |
+| `/init` | 初始化 CLAUDE.md |
+| `/plan [description]` | 进入规划模式 |
+| `/security-review` | 分析安全漏洞 |
+| `/diff` | 查看未提交更改 |
+| `/memory` | 编辑 CLAUDE.md |
+
+## Skills 自定义命令
+
+推荐方式 `.claude/skills/`：
+
+```yaml
+---
+name: my-command
+description: 这个命令的作用
+---
+
+# 我的命令
+当该命令被触发时，Claude 需要遵循的说明。
+```
+
+## 参数传递
+
+- `$ARGUMENTS` — 接收全部参数
+- `$0`、`$1` — 接收单个参数
+- `!` 前缀 — 动态上下文注入（shell 命令）
+
+## Frontmatter 字段参考
+
+| 字段 | 作用 | 默认值 |
+| --- | --- | --- |
+| `name` | 命令名 | 目录名 |
+| `description` | 触发条件说明 | 第一段 |
+| `disable-model-invocation` | true 时只有用户能调用 | false |
+| `user-invocable` | false 时不出现在菜单 | true |
+| `allowed-tools` | 命令可无权限使用的工具 | 继承 |

@@ -1,0 +1,45 @@
+---
+title: "WebVview学习记录"
+date: "2022-06-26"
+tags: ["Android", "WebView"]
+---
+
+## WebView 中获取网页图片
+
+```java
+webview.setWebViewClient(new WebViewClient() {
+    @Override
+    public void onPageFinished(WebView view, String url) {
+        super.onPageFinished(view, url);
+        getWebViewImage();
+        setWebImageClick(view);
+    }
+
+    private void getWebViewImage() {
+        String jsString = "function getImages() {\n" +
+                        "\tvar imgs = document.getElementsByTagName('img');\n" +
+                        "\tvar imgScr = '';\n" +
+                        "\tfor (var i = 0; i < imgs.length; i++) {\n" +
+                        "\t\tif (i == 0) {\n" +
+                        "\t\t\timgScr = imgs[i].src;\n" +
+                        "\t\t} else {\n" +
+                        "\t\t\timgScr = imgScr + '---' + imgs[i].src;\n" +
+                        "\t\t}\n" +
+                        "\t};\n" +
+                        "\treturn imgScr;\n" +
+                        "};\n";
+
+        wbWebview.evaluateJavascript(jsString, null);
+        wbWebview.evaluateJavascript("javascript:getImages()", new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) {
+                    if (value != null && !value.equals("") && !value.equals("null")) {
+                        value = value.replace("\"", "");
+                        String[] dataSource = value.split("---");
+                        imageDataSource = Arrays.asList(dataSource);
+                        Log("已获取到图片, 总共 " + imageDataSource.size() + " 张图片");
+                }
+            }
+        });
+});
+```

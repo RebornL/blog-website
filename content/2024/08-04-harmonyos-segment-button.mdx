@@ -1,0 +1,30 @@
+---
+title: "鸿蒙 SegmentButton 组件使用和 TabContent 切换"
+date: "2024-08-04"
+tags: ["HarmonyOS", "SegmentButton", "TabContent"]
+---
+
+## 组件介绍
+
+SegmentButton 是鸿蒙 Next 新定义的 UX 规范样式，提供纯文本按钮、纯 ICON 按钮和文本 ICON 混合按钮样式。
+
+注意：该官方组件**不支持通用属性**（margin、padding、onclick 等），只能通过 `SegmentButtonOptions` 进行设置。
+
+## 配合 TabContent 页面切换
+
+SegmentButton 可替代 Tabs 组件的 tabBar，通过修改 `selectedIndexes` 关联到 Tabs 组件实现页面切换：
+
+```typescript
+@State @Watch('indexChange') tabSelectedIndexes: number[] = [0];
+
+// SegmentButton
+SegmentButton({ options: this.tabOptions, selectedIndexes: $tabSelectedIndexes })
+
+// Tabs，barHeight 设为 0 隐藏原生 TabBar
+Tabs({ barPosition: BarPosition.Start, index: this.tabSelectedIndexes[0], controller: this.controller }) {
+  TabContent() { /* 页面1 */ }
+  TabContent() { /* 页面2 */ }
+}
+.barHeight(0)
+.scrollable(false)  // 关闭滑动切换，仅通过 SegmentButton 切换
+```

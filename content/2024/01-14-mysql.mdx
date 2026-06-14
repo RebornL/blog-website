@@ -1,0 +1,41 @@
+---
+title: "MySQL记录操作"
+date: "2024-01-14"
+tags: ["MySQL", "Database"]
+---
+
+## 安装数据库
+
+```bash
+brew install mysql
+brew service start mysql       # 启动数据库服务
+mysql_secure_installation      # 数据库安全设置
+mysql -u root -p               # 进入数据库终端操作
+```
+
+## 基本操作
+
+```sql
+CREATE DATABASE mall;           -- 创建数据库
+USE mall;                       -- 进入某个数据库
+SHOW TABLES;                    -- 展示当前有什么数据表
+DESC user;                      -- 查看数据表字段
+SHOW GLOBAL VARIABLES LIKE 'port'; -- 查看端口
+```
+
+## 创建表示例
+
+```sql
+CREATE TABLE `user` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `user_name` varchar(30) DEFAULT NULL COMMENT '用户名',
+  `create_user_id` bigint NOT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(30) NOT NULL COMMENT '创建人名称',
+  `create_time` datetime(3) NOT NULL COMMENT '创建日期',
+  `update_user_id` bigint DEFAULT NULL COMMENT '修改人ID',
+  `update_user_name` varchar(30) DEFAULT NULL COMMENT '修改人名称',
+  `update_time` datetime(3) DEFAULT NULL COMMENT '修改日期',
+  `is_del` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+```

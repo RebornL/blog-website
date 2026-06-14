@@ -1,0 +1,91 @@
+---
+title: "数据结构与算法经典问题解析--第六章（树）"
+date: "2018-11-10"
+tags: ["Algorithm", "Data Structure", "Tree", "Binary Tree"]
+---
+
+## 树的基本概念
+
+- **叶子结点**：没有孩子节点的节点
+- **节点的深度**：从根节点到该节点的路径长度
+- **节点的高度**：从该结点到最深结点的路径长度
+- **斜树**：除了叶子节点外，其余每一节点只有一个孩子节点
+
+## 二叉树
+
+每个节点只有0、1或2个孩子节点。
+
+### 类型
+- **严格二叉树**：每个节点要么有两个孩子节点，要么没有
+- **满二叉树**：每个结点恰好有两个孩子结点且所有叶子结点都在同一层，结点数 n = 2^(h+1) - 1
+- **完全二叉树**：所有叶子节点的深度为 h 或 h-1，且结点编号无遗漏
+
+### 遍历
+- **前序遍历**：当前结点 → 左子树 → 右子树
+- **中序遍历**：左子树 → 当前结点 → 右子树
+- **后序遍历**：左子树 → 右子树 → 当前结点
+- **层序遍历**：按层遍历（广度优先）
+
+```java
+// 递归前序遍历
+void PreOrder(BinaryTreeNode root) {
+    if (root != null) {
+        System.out.println(root.getData());
+        PreOrder(root.getLeft());
+        PreOrder(root.getRight());
+    }
+}
+
+// 非递归前序遍历（栈）
+void PreOrderNonRecursive(BinaryTreeNode root) {
+    if (root == null) return;
+    LLStack S = new LLStack();
+    while (true) {
+        while (root != null) {
+            System.out.println(root.getData());
+            S.push(root);
+            root = root.left;
+        }
+        if (S.isEmpty()) break;
+        root = (BinaryTreeNode) S.pop();
+        root = root.getRight();
+    }
+}
+```
+
+### 经典问题
+
+**1. 根据中序+前序遍历构建二叉树：**
+
+```java
+BinaryTreeNode BuildBinaryTree(int[] inOrder, int[] preOrder, int inStrt, int inEnd) {
+    static int preIndex = 0;
+    if (inStrt > inEnd) return null;
+    BinaryTreeNode newNode = new BinaryTreeNode();
+    newNode.setData(preOrder[preIndex]);
+    preIndex++;
+    if (inStrt == inEnd) return newNode;
+    int inIndex = Search(inOrder, inStrt, inEnd, newNode.getData());
+    newNode.setLeft(BuildBinaryTree(inOrder, preOrder, inStrt, inIndex - 1));
+    newNode.setRight(BuildBinaryTree(inOrder, preOrder, inIndex + 1, inEnd));
+}
+```
+
+**2. 寻找最近公共祖先（LCA）：**
+
+```java
+BinaryTreeNode LCA(BinaryTreeNode root, BinaryTreeNode a, BinaryTreeNode b) {
+    if (root == null) return root;
+    if (root == a || root == b) return root;
+    BinaryTreeNode left = LCA(root.getLeft(), a, b);
+    BinaryTreeNode right = LCA(root.getRight(), a, b);
+    if (left != null && right != null) return root;
+    return left != null ? left : right;
+}
+```
+
+### 二叉搜索树
+- 左子树所有结点 < 当前结点
+- 右子树所有结点 > 当前结点
+- 左右子树也是二叉搜索树
+- 查找、插入、删除平均时间复杂度 O(log n)

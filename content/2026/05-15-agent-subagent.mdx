@@ -1,0 +1,33 @@
+---
+title: "SubAgent — 子智能体"
+date: "2026-05-15"
+tags: ["AI", "Agent", "SubAgent", "nanoAgent"]
+---
+
+## 核心概念
+
+**SubAgent** 解决单个 Agent 同时处理多领域任务时上下文爆炸的问题。
+
+### 实现方式
+
+- 将另一个 Agent 封装为一个**工具函数** `subagent(role, task)`
+- 子代理拥有**独立的 messages 上下文**，与主代理互不干扰
+- 通过**角色 Prompt** 定义子代理的专业边界
+
+### 关键设计
+
+1. **独立上下文**：`sub_messages` 独立维护，不共享主代理的历史
+2. **禁止递归委派**：子代理的 tools 列表中排除 `subagent` 工具，防止无限递归
+3. **返回摘要而非全量历史**：子代理只返回最终结果，控制上下文成本
+
+### 委派收益
+
+- 收益来自**上下文收敛**，而非并行化
+- 主代理专注协调，子代理专注专门任务
+- 角色 Prompt 越具体，子代理输出越稳定
+
+### 与 Multi-agent Teams 的关系
+
+- SubAgent 是**一次性**的：调用后消亡，不保留状态
+- Multi-agent Teams 是**持久化**的：Agent 对象跨多次调用存活
+- SubAgent 是 Team 的前身，Team 是 SubAgent 的升级

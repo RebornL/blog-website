@@ -1,0 +1,49 @@
+---
+title: "鸿蒙动态import和延迟加载"
+date: "2024-09-01"
+tags: ["HarmonyOS", "Dynamic Import", "Performance"]
+---
+
+## 动态导入
+
+动态导入支持导入HAR模块和HSP模块。
+
+### 动态导入HAR模块文件路径
+
+```typescript
+// HAR's Index.ets
+export function add(a: number, b: number): number {
+  let c = a + b;
+  console.log('DynamicImport I am a HAR, %d + %d = %d', a, b, c);
+  return c;
+}
+
+// HAP's src/main/ets/pages/Index.ets
+import('myHar/Index').then((ns: ESObject) => {
+  console.log(ns.add(3, 5));
+});
+
+// HAP's oh-package.json5
+"dependencies": {
+  "myHar": "file:../myHar"
+}
+```
+
+动态导入使用之后，**需要在 build-profile.json5 文件中配置动态运行时设置的三方 Har 和使用动态导入的 ets 文件**，否则可能无法编译成对应的字节码。
+
+```json
+"buildOption": {
+  "arkOptions": {
+    "runtimeOnly": {
+      "packages": ["myHar"],
+      "sources": ["./src/main/ets/utils/Calc.ets"]
+    }
+  }
+}
+```
+
+## 延迟导入
+
+延迟导入类似于动态导入，待加载文件在冷启动阶段不被加载，直至应用程序实际运行过程中需要用到时，才按需同步加载，缩短冷启动耗时。
+
+使用上比动态导入简洁，直接使用 `lazy` 关键字实现即可，但支持范围有限。

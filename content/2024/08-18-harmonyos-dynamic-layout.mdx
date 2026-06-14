@@ -1,0 +1,51 @@
+---
+title: "鸿蒙动态布局记录"
+date: "2024-08-18"
+tags: ["HarmonyOS", "Responsive Layout", "GridRow"]
+---
+
+## 缩进布局
+
+鸿蒙 UX 5.0 规范中定义了三种设备类型：
+
+| SM | MD | LG |
+| --- | --- | --- |
+| 栅格总列数 4，内容占满所有列 | 栅格总列数 8，内容占中间 6 列 | 栅格总列数 12，内容占中间 8 列 |
+| < 600vp | < 840vp | >= 840vp |
+
+可以基于栅格组件（GridRow/GridCol）结合不同的栅格布局实现两侧不同的间距。
+
+```typescript
+@Entry
+@Component
+struct IndentationSample {
+  @State private gridMargin: number = 24
+
+  build() {
+    Row() {
+      GridRow({ columns: { sm: 4, md: 8, lg: 12 }, gutter: 24 }) {
+        GridCol({ span: { sm: 4, md: 6, lg: 8 }, offset: { md: 1, lg: 2 } }) {
+          Column() {
+            ForEach([0, 1, 2, 4], () => {
+              Column() { ItemContent() }
+            })
+          }.width('100%')
+        }
+      }
+      .margin({ left: this.gridMargin, right: this.gridMargin })
+      .onBreakpointChange((breakpoint: string) => {
+        if (breakpoint === 'lg') {
+          this.gridMargin = 48
+        } else if (breakpoint === 'md') {
+          this.gridMargin = 32
+        } else {
+          this.gridMargin = 24
+        }
+      })
+    }
+    .height('100%')
+    .alignItems(VerticalAlign.Center)
+    .backgroundColor('#F1F3f5')
+  }
+}
+```

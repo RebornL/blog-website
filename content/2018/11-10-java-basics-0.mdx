@@ -1,0 +1,57 @@
+---
+title: "Java基础知识0"
+date: "2018-11-10"
+tags: ["Java", "JVM", "Concurrency", "Collection"]
+---
+
+## 基础篇
+
+1. **面向对象特性**：封装、继承、多态
+2. **覆盖 vs 重载**：覆盖是子类重写父类方法（同签名）；重载是同类中同名不同参
+3. **抽象类 vs 接口**：抽象类可有具体方法和成员变量，接口全是抽象方法和常量（Java8 支持 default 方法）
+4. **Java 只有值传递**：引用类型传递的是对象地址的副本
+5. **JDK/JRE/JVM**：JDK 开发工具包 > JRE 运行时环境 > JVM 虚拟机
+
+## 集合
+
+| 接口 | 实现类 |
+| --- | --- |
+| List | ArrayList, LinkedList, Stack, Vector |
+| Set | HashSet, TreeSet, LinkedHashSet |
+| Map | HashMap, TreeMap, Hashtable, ConcurrentHashMap |
+
+### HashMap
+- 线程不安全，允许 null key
+- Java8 后：数组 + 链表 + 红黑树
+- 长度为什么是 2 的幂次方：减少碰撞、高效 & 运算、空间不浪费
+
+### ConcurrentHashMap
+- 分段锁（Segment = ReentrantLock），比 Hashtable 的全表锁更高效
+
+### 扩容
+- ArrayList：初始 10，扩容 `0.5x+1`
+- HashMap：初始 16，加载因子 0.75，扩容翻倍
+
+## 高并发编程
+
+- **线程 vs 进程**：线程共享地址空间，切换更快
+- **死锁四条件**：互斥、请求保持、不剥夺、循环等待
+- **sleep vs wait**：sleep 不释放锁（Thread），wait 释放锁（Object + synchronized）
+- **synchronized**：monitorenter/monitorexit，偏向锁 → 轻量锁 → 重量锁
+- **volatile**：保证可见性，禁止指令重排，不保证原子性
+- **ThreadLocal**：每个线程独立数据区
+- **线程池**：corePoolSize → 队列 → maxPoolSize → 拒绝策略
+
+## JVM 内存管理
+
+### 内存划分
+- 方法区（线程共享）：常量、静态变量、JIT 编译代码
+- 堆（线程共享）：GC 主要场所
+- 程序计数器、虚拟机栈、本地方法栈（线程私有）
+
+### GC 算法
+- 引用计数、标记-清除、复制算法、标记-整理
+
+### GC 触发
+- Minor GC：Eden 区满时触发，频繁
+- Full GC：老年代满时触发，通常伴随 Minor GC

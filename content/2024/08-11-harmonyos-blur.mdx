@@ -1,0 +1,37 @@
+---
+title: "鸿蒙中背景模糊"
+date: "2024-08-11"
+tags: ["HarmonyOS", "Blur", "UI"]
+---
+
+## 动态背景模糊
+
+### backdropBlur
+设置模糊半径，半径越大越模糊，为 0 时不模糊。
+
+### backgroundBlurStyle
+设置背景模糊样式和参数：
+
+```typescript
+.backgroundBlurStyle(BlurStyle.Thin, {
+  colorMode: ThemeColorMode.LIGHT,
+  adaptiveColor: AdaptiveColor.DEFAULT,
+  scale: 0.1
+})
+```
+
+- BlurStyle：设置模糊厚度
+- BlurStyleOptions：设置详细参数（深浅色模式、取色模式、灰阶模糊参数、内容模糊程度）
+
+## 静态模糊
+
+如果模糊内容和半径都不变化，建议使用 effectKit 的 blur 方法，性能更好：
+
+```typescript
+import { effectKit } from "@kit.ArkGraphics2D";
+
+let headFilter = effectKit.createEffect(pixelMap);
+if (headFilter != null) {
+  headFilter.blur(radius);
+}
+```

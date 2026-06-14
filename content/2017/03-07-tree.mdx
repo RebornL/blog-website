@@ -1,0 +1,20 @@
+---
+title: "【转载】文件目录树状(tree)显示"
+date: "2017-03-07"
+tags: ["Mac", "Terminal", "tree"]
+---
+
+## 安装 tree
+
+```bash
+brew install tree
+```
+
+## 使用
+
+```bash
+tree                    # 递归输出当前目录所有文件层级
+tree -L 2               # 限制层级为 2
+tree Desktop            # 指定目录
+tree -L 1 > tree.md     # 导出为文件
+```

@@ -1,0 +1,45 @@
+---
+title: "鸿蒙TaskPool使用"
+date: "2024-08-04"
+tags: ["HarmonyOS", "TaskPool", "Concurrency"]
+---
+
+## 注意事项
+
+1. 使用 `@Concurrent` 标注函数任务才能在 TaskPool 中使用
+2. 需要在 taskpool 中执行的自定义类方法需使用 `@Sendable` 标注
+3. 执行方法耗时**不能超过 3 分钟**
+4. 入参需满足序列化类型
+5. 不同线程上下文不同，taskpool 只能使用线程安全的库
+6. 传输数据量限制为 16M
+
+## 代码示例
+
+```typescript
+@Concurrent
+function imageProcessing(dataSlice: ArrayBuffer): ArrayBuffer {
+  console.log('imageProcessing');
+  return dataSlice;
+}
+
+function histogramStatistic(pixelBuffer: ArrayBuffer): void {
+  let number: number = pixelBuffer.byteLength / 3;
+  let buffer1 = pixelBuffer.slice(0, number);
+  let buffer2 = pixelBuffer.slice(number, number * 2);
+  let buffer3 = pixelBuffer.slice(number * 2);
+
+  let group: taskpool.TaskGroup = new taskpool.TaskGroup();
+  group.addTask(imageProcessing, buffer1);
+  group.addTask(imageProcessing, buffer2);
+  group.addTask(imageProcessing, buffer3);
+
+  taskpool.execute(group, taskpool.Priority.HIGH).then((ret: Object) => {
+    console.log(`result: ${JSON.stringify(ret)}`);
+  });
+}
+```
+
+## 其他接口
+
+- `taskpool.executeDelayed`：延迟执行
+- `taskpool.executePeriodically`：周期任务执行

@@ -1,0 +1,29 @@
+---
+title: "Skills、Rules 与 MCP — 能力外置"
+date: "2026-05-15"
+tags: ["AI", "Agent", "Skills", "Rules", "MCP", "nanoAgent"]
+---
+
+## 核心概念
+
+**Skills、Rules、MCP** 解决如何在不改动 Agent 核心循环的前提下扩展其行为和能力。
+
+### 三者的区别
+
+| 机制 | 注入位置 | 作用 | 示例 |
+| --- | --- | --- | --- |
+| Rule | Prompt | 约束行为 | "不要删除文件"、"始终用 UTF-8" |
+| Skill | Prompt | 补充知识 | "如何使用 X API"、"Y 工具的最佳实践" |
+| MCP | Tools | 扩展能力 | 新增文件读写、数据库查询、浏览器自动化等工具 |
+
+### 注入时机
+
+- **Rule 注入**：在 system prompt 中追加约束性语句，限制 Agent 的行为边界
+- **Skill 注入**：在 system prompt 中追加领域知识，补充 Agent 的专业能力
+- **MCP 注入**：在 tools 列表中注册新工具，扩展 Agent 的可执行动作
+
+### 设计原则
+
+- 核心 Agent 循环保持最小化（约 100 行）
+- 所有能力扩展通过外部配置注入
+- 类似 Claude Code 的 `.clinerules`、Skills 目录、MCP Server 配置

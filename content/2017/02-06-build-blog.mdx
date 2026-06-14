@@ -1,0 +1,51 @@
+---
+title: "【转载】快速搭建个人博客"
+date: "2017-02-06"
+tags: ["Blog", "GitHub Pages", "Jekyll"]
+---
+
+## GitHub Pages + Jekyll 搭建个人博客
+
+### 快速步骤
+
+1. 注册 GitHub 账号
+2. Fork 博客模板仓库
+3. 修改仓库名为 `你的Github账号名.github.io`
+4. 修改 `_config.yml` 配置文件
+
+### Jekyll 网站结构
+
+```
+├── _config.yml       # 全局配置文件
+├── _posts            # 放置博客文章的文件夹
+├── img               # 存放图片的文件夹
+├── _includes         # 可复用组件
+├── _layouts          # 布局模板
+└── index.html        # 首页
+```
+
+### _config.yml 关键配置
+
+- `title`：博客标题
+- `SEOTitle`：浏览器搜索显示的标题
+- `header-img`：首页背景图片
+- `description`：网站介绍
+- `url`：博客地址
+
+### 文章格式
+
+文件命名：`2017-02-04-Hello-2017.md`（时间+标题，空格用 `-` 替换）
+
+Markdown + YAML frontmatter：
+
+```yaml
+---
+layout: post
+title: My First Post
+subtitle: Hello World, Hello Blog
+date: 2017-02-06
+author: BY
+header-img: img/post-bg-2015.jpg
+tags: [Blog]
+---
+```

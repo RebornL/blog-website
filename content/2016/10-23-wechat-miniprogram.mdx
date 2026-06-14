@@ -1,0 +1,35 @@
+---
+title: "微信小程序开发问题记录"
+date: "2016-10-23"
+tags: ["WeChat", "Mini Program"]
+---
+
+## wx.request 问题
+
+### 请求链接
+- 必须使用 https 协议
+- 需在微信公众平台添加合法域名，不允许直接使用 IP 地址
+- POST 请求需设置 header：
+
+```javascript
+"Content-Type": "application/x-www-form-urlencoded"
+```
+
+不设置时，POST 数据会被放在 request payload 中。
+
+## 生命周期注意
+
+onLoad 中发起请求不会阻塞执行，会继续执行 onShow。重要赋值要放在 success 回调中：
+
+```javascript
+onLoad: function() {
+    wx.request({
+        success: function() {
+            that.setData({ temp: "123123" });
+        }
+    });
+},
+onShow: function() {
+    console.log(temp); // 可能还是初始值
+}
+```

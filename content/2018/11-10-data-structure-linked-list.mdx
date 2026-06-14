@@ -1,0 +1,84 @@
+---
+title: "数据结构与算法经典问题解析--第三章（链表）"
+date: "2018-11-10"
+tags: ["Algorithm", "Data Structure", "Linked List"]
+---
+
+## 链表 vs 数组
+
+| | 数组 | 链表 |
+| --- | --- | --- |
+| 访问元素 | O(1) | O(n) |
+| 插入/删除 | 复杂 | O(1)（不含检索） |
+| 扩展 | 固定大小 | 常数时间 |
+| 内存 | 连续空间块 | 按需分配 |
+
+链表常用在存储为主的操作中，数组则适用于小容量、访问为主的操作。
+
+## 单向链表
+
+```java
+public class ListNode {
+    private int data;
+    private ListNode next;
+}
+```
+
+### 插入操作
+- **表头插入**：新节点 next → 表头，表头 → 新节点
+- **表尾插入**：尾节点 next → 新节点
+- **中间插入**：新节点 next → 目标位置，前一节点 next → 新节点
+
+## 双向链表
+
+增加前驱指针，可双向操作，但空间开销更大，插入删除更繁琐。
+
+## 循环链表
+
+尾节点 next 指向表头，常用于多进程轮流使用同一资源的场景。
+
+## 经典问题
+
+### 1. 一次遍历找倒数第 n 节点
+
+双指针：pNthNode 先不动，pTemp 先走 n 步，然后一起走，pTemp 到末尾时 pNthNode 即为倒数第 n 个。
+
+### 2. 判断链表是否有环（快慢指针）
+
+```java
+boolean DoesLinkedListContainsLoop(ListNode head) {
+    ListNode slowPtr = head, fastPtr = head;
+    while (fastPtr.getNext() != null && fastPtr.getNext().getNext() != null) {
+        slowPtr = slowPtr.getNext();
+        fastPtr = fastPtr.getNext().getNext();
+        if (slowPtr == fastPtr) return true;
+    }
+    return false;
+}
+```
+
+### 3. 寻找环的起始点
+
+快慢指针相遇后，慢指针回到表头，快指针留在相遇处，步长均为 1，再次相遇处即环的起始点。
+
+### 4. 逆置单向链表
+
+```java
+ListNode ReverseList(ListNode head) {
+    ListNode temp = null, nextNode = null;
+    while (head != null) {
+        nextNode = head.getNext();
+        head.setNext(temp);
+        temp = head;
+        head = nextNode;
+    }
+    return temp;
+}
+```
+
+### 5. 两个相交链表找交点
+
+- 获取两个链表长度 O(max(m,n))
+- 计算长度差 d
+- 较长的链表先走 d 步
+- 两链表同时走，相遇点即交点

@@ -1,0 +1,13 @@
+---
+title: "Flink学习疑问记录"
+date: "2022-12-04"
+tags: ["Flink", "Big Data"]
+---
+
+## JVM 参数 `--add-opens`
+
+```bash
+--add-opens java.base/java.lang=ALL-UNNAMED
+```
+
+Java 9以上，`--add-opens` 允许"深度反射"，意思是非公共成员的访问。通常可以通过调用 `setAccessible(true)` 的反射代码来识别此类访问。

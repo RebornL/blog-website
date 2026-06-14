@@ -1,0 +1,69 @@
+---
+title: "秋招笔试记录"
+date: "2019-09-23"
+tags: ["Interview", "Algorithm", "Network", "Database"]
+---
+
+## 马蜂窝笔试
+
+### 排序算法稳定性
+
+| 稳定 | 不稳定 |
+| --- | --- |
+| 冒泡排序 | 选择排序 |
+| 插入排序 | 快速排序 |
+| 归并排序 | 堆排序 |
+| 基数排序 | 希尔排序 |
+
+### 回溯法 vs 分支限界法
+- **回溯法**：深度优先，找出所有解
+- **分支限界法**：广度优先或最小耗费优先，找一个解
+
+## 微众银行笔试
+
+- 平均周转时间：每个结束时间点总和除以线程数
+- 完全二叉树 vs 满二叉树
+
+## 招行网络科技笔试
+
+- 堆利用率不高的原因：内存碎片
+- 存储过程优点：封装性、可回传值、安全性
+- 存储过程缺点：可移植性差，与数据库绑定
+- 局域网拓扑结构：总线型、星型、环形、树形、网状
+- 操作系统基本特征：并发和共享，互为存在条件
+
+## KMP 算法
+
+```java
+public static boolean kmpMatch(String str, String pattern) {
+    int len1 = str.length(), len2 = pattern.length();
+    if (len2 <= 0) return true;
+    if (len1 <= 0) return false;
+    int[] next = new int[len2];
+    getNext(next, pattern);
+    int i = 0, j = 0;
+    while (i < len1 && j < len2) {
+        if (str.charAt(i) == pattern.charAt(j)) {
+            i++; j++;
+        } else {
+            if (j != 0) j -= (j - next[j-1]);
+            else i++;
+        }
+    }
+    return j == len2;
+}
+```
+
+## CVTE 笔试
+
+- 无向完全图边数：n(n-1)/2
+- MySQL 慢查询分析：show 命令、慢查询日志、explain、profiling
+- AOP 原理：静态代理（接口实现）+ 动态代理（CGLib）
+- AVL 树：自平衡二叉查找树，左右子树高度差 ≤ 1
+
+## BIGO 笔试
+
+- DNS 查询：递归式查询和迭代式查询
+- 数据库完整性：实体完整性、域完整性、参照完整性、用户定义完整性
+- 死锁四条件：互斥、不可剥夺、持有等待、循环等待
+- int 范围 (-2^31 ~ 2^31-1)，超 10 位用 long

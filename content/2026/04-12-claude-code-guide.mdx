@@ -1,0 +1,86 @@
+---
+title: "Claude Code 使用指南"
+date: "2026-04-12"
+tags: ["AI", "Claude Code", "Tool"]
+---
+
+## 安装与认证
+
+```bash
+npm install -g @anthropic-ai/claude-code
+claude  # 首次运行引导登录
+export ANTHROPIC_API_KEY="sk-ant-..."
+```
+
+## 核心工具
+
+| 工具 | 作用 | 典型场景 |
+| --- | --- | --- |
+| Read | 读取文件内容 | 查看代码、配置文件 |
+| Edit | 精确替换文件内容 | 修改函数、修复 bug |
+| Write | 写入/覆盖文件 | 创建新文件 |
+| Bash | 执行 shell 命令 | 运行测试、构建、安装依赖 |
+| Glob | 文件路径模式匹配 | 找所有 .ts 文件 |
+| Grep | 内容搜索 | 搜索函数名、关键词 |
+| Agent | 启动子代理处理复杂任务 | 大型重构、多文件调研 |
+
+## 常用斜杠命令
+
+| 命令 | 作用 |
+| --- | --- |
+| `/commit` | 分析变更并生成 commit message |
+| `/review-pr <url>` | 审查指定 PR |
+| `/plan` | 进入规划模式 |
+| `/clear` | 清空对话历史 |
+| `/compact` | 压缩上下文（节省 token） |
+| `/tokens` | 查看当前 token 使用 |
+| `/model` | 切换模型 |
+| `/mcp` | 管理 MCP 服务器 |
+
+## 键盘快捷键
+
+| 快捷键 | 作用 |
+| --- | --- |
+| `Ctrl+C` | 取消当前操作 |
+| `Ctrl+R` | 重新运行上一条命令 |
+| `Ctrl+Shift+Enter` | 提交工具调用（审批模式） |
+| `↑/↓` | 浏览命令历史 |
+
+## CLAUDE.md
+
+在项目根目录创建 `CLAUDE.md`，Claude Code 会自动加载其中的指令。
+
+**层级**：
+- `~/.claude/CLAUDE.md` — 全局（所有项目）
+- `CLAUDE.md` — 项目根目录
+- 子目录中的 `CLAUDE.md` — 仅影响该目录
+
+## MCP 服务器
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/allow"]
+    }
+  }
+}
+```
+
+## 权限模式
+
+| 模式 | 行为 |
+| --- | --- |
+| Default | 读自动允许，写/执行需确认 |
+| Accept Edits | 读和编辑自动允许，破坏性操作需确认 |
+| Auto-approve | 所有操作自动执行（谨慎使用） |
+
+## 最佳实践
+
+1. 先读后改，不要直接 Write 覆盖
+2. 精确描述意图
+3. 复杂任务分步进行
+4. 用 `/plan` 避免冲动修改
+5. 用 `/compact` 管理长对话上下文
+6. 用子代理分担复杂调研任务，避免污染主上下文

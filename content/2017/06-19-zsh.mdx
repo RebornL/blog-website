@@ -1,0 +1,35 @@
+---
+title: "【转载】快速配置zsh"
+date: "2017-06-19"
+tags: ["zsh", "Terminal", "Mac"]
+---
+
+## 安装 oh my zsh
+
+```bash
+git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
+```
+
+## 修改主题
+
+```bash
+open ~/.zshrc
+# 修改 ZSH_THEME="robbyrussell"
+ZSH_THEME="kolo"
+```
+
+主题在 `~/.oh-my-zsh/themes` 目录下。
+
+## 设置为默认 shell
+
+```bash
+chsh -s /bin/zsh
+```
+
+## 添加自定义命令
+
+```bash
+alias fd='defaults write com.apple.finder AppleShowAllFiles -boolean true ; killall Finder'
+alias fh='defaults write com.apple.finder AppleShowAllFiles -boolean false ; killall Finder'
+```

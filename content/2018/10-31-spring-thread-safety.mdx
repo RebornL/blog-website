@@ -1,0 +1,23 @@
+---
+title: "Spring中线程安全"
+date: "2018-10-31"
+tags: ["Spring", "Java", "Thread Safety"]
+---
+
+## Bean 作用域与线程安全
+
+### Bean 作用域
+- **singleton**：默认，单例，与 Spring IOC 容器生命周期一致
+- **prototype**：每次注入创建新对象
+- **request**：每个 HTTP 请求创建单例对象
+- **session**：每个 session 生命周期内创建单例对象
+- **application**：ServletContext 生命周期内复用单例对象
+- **websocket**：websocket 生命周期内复用单例对象
+
+### 线程安全策略
+
+1. **无状态 Bean**：Service、DAO、Controller 设计为无状态对象
+2. **ThreadLocal**：当 Bean 需要有自己的变量时，用 ThreadLocal 将变量变为线程私有
+
+   > 注意：ThreadLocal 使用完成后需要手动 remove 释放内存，否则可能导致内存泄漏
+3. **同步操作**：实例变量需要在多线程中共享时，使用 Synchronized、CAS、Lock 等

@@ -1,0 +1,66 @@
+---
+title: "数据结构与算法经典问题解析--第四章（栈）"
+date: "2018-11-10"
+tags: ["Algorithm", "Data Structure", "Stack"]
+---
+
+## 栈
+
+栈是一种 LIFO（后进先出）的线性表，只允许在栈顶插入和删除元素。
+
+### 基本概念
+- **入栈（push）**：在栈顶插入元素
+- **出栈（pop）**：在栈顶删除元素
+- **下溢（underflow）**：对空栈执行删除
+- **溢出（overflow）**：对满栈执行入栈
+
+### 应用
+符号匹配、中缀表达式转后缀表达式、浏览器历史记录、递归调用栈
+
+### 递增 vs 倍增策略
+- 递增：push 平摊时间 O(n) [O(n²)/n]
+- 倍增：push 平摊时间 O(1) [O(n)/n]
+
+## 经典问题
+
+### 1. 判断回文字符串（含特殊字符 X）
+
+```java
+boolean isPalindrome(String inputStr) {
+    char inputChar[] = inputStr.toCharArray();
+    Stack s = new LLStack();
+    int i = 0;
+    while (inputChar[i] != 'X') {
+        s.push(inputChar[i]);
+        i++;
+    }
+    i++;
+    while (i < inputChar.length) {
+        if (s.isEmpty()) return false;
+        if (inputChar[i] != ((Character) s.pop()).charValue()) return false;
+        i++;
+    }
+    return true;
+}
+```
+
+### 2. 只使用一个栈进行逆置（递归）
+
+```java
+public static void reverseStack(Stack stack) {
+    if (stack.isEmpty()) return;
+    int temp = stack.pop();
+    reverseStack(stack);
+    insertAtBottom(stack, temp);
+}
+
+private static void insertAtBottom(Stack stack, int data) {
+    if (stack.isEmpty()) {
+        stack.push(data);
+        return;
+    }
+    int temp = stack.pop();
+    insertAtBottom(stack, data);
+    stack.push(temp);
+}
+```

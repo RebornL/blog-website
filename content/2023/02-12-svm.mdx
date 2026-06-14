@@ -1,0 +1,57 @@
+---
+title: "SVM实战"
+date: "2023-02-12"
+tags: ["Machine Learning", "SVM", "sklearn"]
+---
+
+## SVM 基础
+
+SVM 是有监督的学习模型，需要事先对数据打上分类标签，通过求解最大分类间隔来求解二分类问题。如果求解多分类问题，可以将多个二分类组合起来形成多分类。
+
+- SVM 用作回归：使用 SVR 或 LinearSVR（Support Vector Regression）
+- SVM 用作分类器：使用 SVC 或 LinearSVC（Support Vector Classification）
+
+## 乳腺癌检测案例
+
+### 1. 数据加载
+
+```python
+data = pd.read_csv("./data.csv")
+pd.set_option('display.max_columns', None)
+print(data.columns)
+print(data.head(5))
+print(data.describe())
+```
+
+通过相关性减少数据维度特征，用少量特征代表数据特性，可以增强分类器的泛化能力，避免过拟合。
+
+### 2. 特征选择
+
+```python
+features_remain = ['radius_mean', 'texture_mean', 'smoothness_mean',
+                   'compactness_mean', 'symmetry_mean', 'fractal_dimension_mean']
+```
+
+### 3. 准备训练集和测试集
+
+```python
+train, test = train_test_split(data, test_size=0.3)
+train_X = train[features_remain]
+train_y = train['diagnosis']
+test_X = test[features_remain]
+test_y = test['diagnosis']
+
+# Z-Score 规范化，保证每个特征维度均值为0，方差为1
+ss = StandardScaler()
+train_X = ss.fit_transform(train_X)
+test_X = ss.transform(test_X)
+```
+
+### 4. 模型训练和预测
+
+```python
+model = svm.SVC()
+model.fit(train_X, train_y)
+prediction = model.predict(test_X)
+print('准确率: ', metrics.accuracy_score(test_y, prediction))
+```

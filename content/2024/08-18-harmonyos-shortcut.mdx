@@ -1,0 +1,61 @@
+---
+title: "鸿蒙应用的快捷入口"
+date: "2024-08-18"
+tags: ["HarmonyOS", "Shortcut"]
+---
+
+## 快捷入口
+
+鸿蒙应用提供了类似 Android/iOS 的长按 APP 快捷入口功能，通过配置文件实现。
+
+### 配置步骤
+
+1. 在 `resources/base/profile` 下新建 `shortcuts_config.json`：
+
+```json
+{
+  "shortcuts": [
+    {
+      "shortcutId": "search_id",
+      "label": "搜索",
+      "icon": "$media:aa_icon",
+      "wants": [
+        {
+          "bundleName": "com.ohos.demo",
+          "moduleName": "entry",
+          "abilityName": "DemoAbility",
+          "parameters": {
+            "testKey": "testValue"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+2. 在 `module.json5` 中对对应 Ability 配置 metadata：
+
+```json
+{
+  "module": {
+    "abilities": [
+      {
+        "name": "DemoAbility",
+        "metadata": [
+          {
+            "name": "ohos.ability.shortcuts",
+            "resource": "$profile:shortcuts_config"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### 图片设置
+
+- 格式：png 或 webp
+- 尺寸：1024x1024px
+- 内容：带图标的透明前景层 + 背景图

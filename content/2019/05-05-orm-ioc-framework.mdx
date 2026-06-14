@@ -1,0 +1,60 @@
+---
+title: "造个简易轮子--ORM框架和IoC(XML方式实现)总结"
+date: "2019-05-05"
+tags: ["Java", "ORM", "IoC", "Framework"]
+---
+
+## ORM 框架实现
+
+### 注解定义
+
+```java
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Table {
+    String value();
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface Column {
+    String value() default "";
+    boolean isNull() default false;
+    boolean isId() default false;
+    String type() default "varchar(100)";
+}
+```
+
+### 核心功能
+- 通过 properties 文件配置数据库
+- @Table 注解映射表名
+- @Column 注解定义列属性（值、是否为空、是否主键、数据类型）
+- 扫描 bean 包，自动创建不存在的表
+- 实现基本 CRUD 功能
+
+### 注解解析（反射）
+
+```java
+public static String getTableName(Class<?> beanCls) {
+    Table table = beanCls.getAnnotation(Table.class);
+    if (table == null) return beanCls.getSimpleName().toLowerCase();
+    return table.value();
+}
+
+public static Field findIdField(Class<?> cls) {
+    for (Field f : cls.getDeclaredFields()) {
+        if (isId(f)) return f;
+    }
+    return null;
+}
+```
+
+## IoC 容器实现（XML 方式）
+
+通过 DTD 定义 beans、bean、property 等 XML 节点表示 JavaBean 配置。使用 ClassPathXmlApplicationContext 加载 XML，通过反射创建实例并注入依赖。
+
+### 基本流程
+1. 解析 XML 配置文件
+2. 通过反射创建 Bean 实例
+3. 注入属性依赖（setter 或构造器）
+4. 管理 Bean 生命周期

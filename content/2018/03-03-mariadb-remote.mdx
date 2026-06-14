@@ -1,0 +1,36 @@
+---
+title: "Ubuntu下MariaDB安装及远程登录设置"
+date: "2018-03-03"
+tags: ["MariaDB", "Ubuntu", "Database"]
+---
+
+## 安装
+
+```bash
+sudo apt install mariadb-server
+sudo mysql_secure_installation
+```
+
+安全设置选项：
+- 删除匿名用户（生产环境建议）
+- 禁止 root 远程登录（生产环境建议）
+- 删除测试数据库（生产环境建议）
+
+## 远程登录设置
+
+```bash
+# 进入 MariaDB 终端
+mysql -u root -p
+
+# 给 root 用户最大权限
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'password';
+FLUSH PRIVILEGES;
+EXIT;
+
+# 编辑配置文件
+vim /etc/mysql/mariadb.conf.d/50-server.cnf
+# 注释掉 bind-address 这一行
+
+# 重启 MariaDB
+systemctl restart mysql
+```

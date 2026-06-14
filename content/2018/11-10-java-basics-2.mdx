@@ -1,0 +1,67 @@
+---
+title: "Java基础知识2"
+date: "2018-11-10"
+tags: ["Java", "Lambda", "Stream", "Generics"]
+---
+
+## 接口
+
+### Comparable 接口
+
+```java
+public interface Comparable<T> {
+    int compareTo(T other);
+}
+```
+
+返回正值 → 当前对象排在 other 之后；返回负数 → 当前对象排在 other 之前。
+
+**两个数值比较，建议直接用包装类的 compare 方法，可处理 NaN 和无穷大值。**
+
+### Comparator 接口
+
+```java
+public interface Comparator<T> {
+    int compare(T first, T second);
+}
+```
+
+区别：Comparable 需要类亲自实现；Comparator 可由第三方实现，lambda 常用 Comparator。
+
+## Lambda 表达式
+
+将函数表达为对象，所有函数式接口都可以用 lambda 实现。
+
+### 方法引用
+
+```java
+Arrays.sort(strings, (x, y) -> x.compareToIgnoreCase(y));
+// 等价于
+Arrays.sort(strings, String::compareToIgnoreCase);
+```
+
+三种方式：类::实例方法、类::静态方法、对象::实例方法
+
+### 构造函数引用
+
+```java
+Employee[] buttons = stream.toArray(Employee[]::new);
+```
+
+## Stream
+
+```java
+long count = words.stream().filter(w -> w.length() > 12).count();
+```
+
+Stream 与集合的区别：
+1. 流不存储元素
+2. 流操作不改变源数据
+3. 流操作可能是延迟的
+
+## Java 泛型
+
+- `<? extends T>`：上界为 T，Get First，用于消费集合元素为主的场景
+- `<? super T>`：下界为 T，Put First，用于生产集合元素为主的场景
+
+这两种特殊用法主要用在函数参数中，不直接用在逻辑代码进行元素增删。

@@ -1,0 +1,29 @@
+---
+title: "【转载】Git 代码回滚"
+date: "2017-02-16"
+tags: ["Git", "Version Control"]
+---
+
+## git revert vs git reset
+
+**git revert**：提交回滚，忽略指定版本，提交一个新的版本。新版本中删除了所指定的版本。
+
+**git reset**：重置到指定提交。
+
+- `git reset --soft`（默认）：commit 之后的修改退回到 git 缓冲区
+- `git reset --hard`：commit 的修改直接丢弃
+
+## 代码回退
+
+```bash
+git reset --hard HEAD^            # 回退到上个版本
+git reset --hard commit_id        # 退到/进到指定 commit_id
+git push origin HEAD --force      # 推送到远程
+```
+
+## 版本穿梭（后悔药）
+
+```bash
+git reflog                        # 查看每一次操作记录
+git reset --hard b45959e          # 恢复到指定版本
+```

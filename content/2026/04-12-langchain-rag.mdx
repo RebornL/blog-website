@@ -1,0 +1,82 @@
+---
+title: "LangChain、LangGraph与RAG"
+date: "2026-04-12"
+tags: ["AI", "LangChain", "LangGraph", "RAG", "LLM"]
+---
+
+## LangChain
+
+LangChain 是目前构建 LLM 应用最主流的框架之一，围绕**可组合组件**构建：
+
+| 模块 | 说明 |
+| --- | --- |
+| Models | 对接各类 LLM 和 Embedding 模型 |
+| Prompts | 提示词模板系统，支持动态变量、Few-shot 示例 |
+| Chains | 通过 LCEL 声明式地串联组件，支持流式、异步和批处理 |
+| Agents | 让 LLM 自主决定使用哪些工具、按什么顺序执行 |
+| Memory | 短期记忆（对话历史）+ 长期记忆（向量存储持久化） |
+| Tools | 外部能力接入（搜索、数据库、API 调用等） |
+
+### LCEL 示例
+
+```python
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+
+prompt = ChatPromptTemplate.from_template("用{language}解释{topic}")
+llm = ChatOpenAI(model="gpt-4")
+chain = prompt | llm
+result = chain.invoke({"language": "中文", "topic": "量子计算"})
+```
+
+## LangGraph
+
+LangGraph 是 LangChain 团队推出的**有状态、有向图风格的 Agent 编排框架**。支持循环、分支、回溯的流程图。
+
+### 核心概念
+
+- **State（状态）**：图的全局共享状态，每个节点读取和更新它
+- **Node（节点）**：执行具体任务的函数
+- **Edge（边）**：定义节点间的流转关系，支持条件边
+- **Checkpoint**：自动持久化图状态，支持中断恢复和时间旅行
+
+```python
+from langgraph.graph import StateGraph, END
+from typing import TypedDict
+
+class GraphState(TypedDict):
+    question: str
+    answer: str
+
+def generate(state):
+    state["answer"] = "..."
+    return state
+
+workflow = StateGraph(GraphState)
+workflow.add_node("generate", generate)
+workflow.set_entry_point("generate")
+app = workflow.compile()
+```
+
+## RAG（检索增强生成）
+
+核心思想：**回答之前先查资料**。
+
+```
+用户提问 → 检索器从知识库中找出相关片段 → 把问题 + 片段一起喂给 LLM → 生成回答
+```
+
+| 方式 | 类比 |
+| --- | --- |
+| 纯 LLM | 闭卷考试，全靠记忆 |
+| RAG | 开卷考试，先翻书再作答 |
+
+### 标准 RAG 管线
+
+1. 文档加载 → 切分 → 向量化 → 存入向量数据库
+2. 用户提问 → 问题向量化 → 相似度检索 → top_k_chunks
+3. 把检索到的内容拼进 Prompt → LLM 生成回答
+
+## 三者关系
+
+> **RAG 是一种架构思想**（先检索再生成），**LangChain 是实现 RAG 的工具**，**LangGraph 是把复杂 RAG 流程编排得更灵活的状态机**。

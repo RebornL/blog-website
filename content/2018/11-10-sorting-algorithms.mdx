@@ -1,0 +1,81 @@
+---
+title: "排序算法（Java版）"
+date: "2018-11-10"
+tags: ["Algorithm", "Sorting", "Java"]
+---
+
+| 算法 | 平均时间 | 最坏时间 | 空间 | 稳定性 |
+| --- | --- | --- | --- | --- |
+| 冒泡排序 | O(n²) | O(n²) | O(1) | 稳定 |
+| 选择排序 | O(n²) | O(n²) | O(1) | 不稳定 |
+| 插入排序 | O(n²) | O(n²) | O(1) | 稳定 |
+| 希尔排序 | O(n^1.3) | O(n²) | O(1) | 不稳定 |
+| 归并排序 | O(n log n) | O(n log n) | O(n) | 稳定 |
+| 快速排序 | O(n log n) | O(n²) | O(log n) | 不稳定 |
+| 堆排序 | O(n log n) | O(n log n) | O(1) | 不稳定 |
+
+## 冒泡排序
+
+```java
+public static void bubbleSort(int[] arr) {
+    for (int i = 0; i < arr.length - 1; i++) {
+        for (int j = 0; j < arr.length - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) swap(arr, j, j + 1);
+        }
+    }
+}
+```
+
+## 快速排序
+
+```java
+public static void quickSort(int[] arr, int left, int right) {
+    if (left >= right) return;
+    int partIndex = partition(arr, left, right);
+    quickSort(arr, left, partIndex - 1);
+    quickSort(arr, partIndex + 1, right);
+}
+
+public static int partition(int[] arr, int left, int right) {
+    int pivot = arr[right];
+    int i = left;
+    for (int j = left; j < right; j++) {
+        if (arr[j] < pivot) swap(arr, i++, j);
+    }
+    swap(arr, i, right);
+    return i;
+}
+```
+
+### 三向切分（优化大量重复元素）
+
+```java
+public void threeWayQuickSort(int[] arr, int l, int r) {
+    if (l >= r) return;
+    int lt = l, i = l + 1, gt = r;
+    int pivot = arr[l];
+    while (i <= gt) {
+        if (arr[i] < pivot) swap(arr, i++, lt++);
+        else if (arr[i] > pivot) swap(arr, i, gt--);
+        else i++;
+    }
+    threeWayQuickSort(arr, l, lt - 1);
+    threeWayQuickSort(arr, gt + 1, r);
+}
+```
+
+## 归并排序
+
+```java
+public static void mergeSort(int[] arr, int left, int right) {
+    if (left >= right) return;
+    int mid = (left + right) / 2;
+    mergeSort(arr, left, mid);
+    mergeSort(arr, mid + 1, right);
+    merge(arr, left, right);
+}
+```
+
+## 堆排序
+
+使用数组表示完全二叉树，位置 k 的父节点为 k/2，子节点为 2k 和 2k+1。上浮（swim）和下沉（sink）是核心操作。

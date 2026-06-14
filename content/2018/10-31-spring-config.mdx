@@ -1,0 +1,83 @@
+---
+title: "Spring中配置方式"
+date: "2018-10-31"
+tags: ["Spring", "Java Web", "IoC", "DI", "AOP"]
+---
+
+## Spring 常用注解
+
+| 注解 | 用途 |
+| --- | --- |
+| @Component | 标注普通的 Spring Bean |
+| @Repository | 标注 DAO 组件 |
+| @Service | 标注业务逻辑组件 |
+| @Controller | 标注控制器组件 |
+| @Autowired | 自动注入（属性、构造器、方法） |
+
+## Spring 核心技术
+
+### 依赖注入（DI）
+控制反转（IoC）的具体实现。注入方式：
+- 构造器注入：依赖更强，通过构造函数传参
+- Setter 注入：解耦性更高
+
+### 面向切面编程（AOP）
+将横切关注点（日志、事务、安全、缓存）从业务逻辑中分离。
+
+## 配置方式
+
+### XML 方式
+```xml
+<bean id="helloWorld" class="com.example.HelloWorld" 
+      init-method="init" destroy-method="destroy">
+    <property name="message" value="Hello World!"/>
+</bean>
+```
+
+### 注解方式
+- @Required：应用于 setter 方法
+- @Autowired：应用于 setter、构造器、属性
+- @Qualifier：指定确切的 bean（配合 @Autowired）
+
+### Java Config 方式
+```java
+@Configuration
+public class AppConfig {
+    @Bean(initMethod = "init", destroyMethod = "destroy")
+    public HelloWorld helloWorld() {
+        return new HelloWorld();
+    }
+}
+```
+
+## Bean 作用域
+
+| 作用域 | 说明 |
+| --- | --- |
+| singleton | 单例（默认），每个容器一个实例 |
+| prototype | 原型，每次请求创建新实例 |
+| request | HTTP 请求级别 |
+| session | HTTP 会话级别 |
+
+## Bean 生命周期
+
+1. **初始化**：实现 InitializingBean 的 afterPropertiesSet() 或配置 init-method
+2. **使用**：Bean 可用
+3. **销毁**：实现 DisposableBean 的 destroy() 或配置 destroy-method
+
+## BeanPostProcessor
+
+后置处理器，可在 Bean 初始化前后执行自定义逻辑：
+
+```java
+public class InitHelloWorld implements BeanPostProcessor {
+    public Object postProcessBeforeInitialization(Object bean, String beanName) {
+        // 初始化前处理
+        return bean;
+    }
+    public Object postProcessAfterInitialization(Object bean, String beanName) {
+        // 初始化后处理
+        return bean;
+    }
+}
+```

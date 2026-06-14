@@ -1,0 +1,37 @@
+---
+title: "Git使用记录"
+date: "2019-08-31"
+tags: ["Git", "Version Control"]
+---
+
+## Git 工作方式
+
+Git 保存每一次更新的文件快照，使用 SHA-1 哈希值作为索引。
+
+### 文件三种状态
+- **已提交（committed）**：安全保存在本地数据库
+- **已修改（modified）**：已修改但未保存
+- **已暂存（staged）**：已标记为下次提交
+
+### 工作流程
+1. 在工作目录修改文件
+2. 暂存文件（`git add`）
+3. 提交更新（`git commit`）
+
+### 常用命令
+
+```bash
+git init                    # 初始化仓库
+git clone <url>             # 克隆远程仓库
+git add .                   # 暂存所有修改
+git commit -m "message"     # 提交
+git push origin master      # 推送到远程
+git checkout -b "branch"    # 创建并切换分支
+git merge xxx               # 合并分支
+git rm file                 # 移除文件跟踪
+git status                  # 查看修改状态
+git log                     # 查看提交历史
+git fetch origin            # 拉取远程更新
+git commit --amend          # 修改前一次 commit
+git reset --hard HEAD^      # 回退到上一版本
+```

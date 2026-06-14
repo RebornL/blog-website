@@ -1,0 +1,60 @@
+---
+title: "gstack+superpowers高尔夫差点协会设计流程"
+date: "2026-04-20"
+tags: ["AI", "gstack", "superpowers", "Design", "Workflow"]
+---
+
+## 场景说明
+
+高尔夫 App 已有高尔夫数据页面，新增"差点模拟协会"模块，包含：
+1. 申请加入需调用云测接口进行授权验证
+2. 展示用户最近 5 年的数据表现（折线图）
+3. 展示用户击球数据雷达图
+
+## 开发流程
+
+### 第一步：需求澄清 — `/office-hours`
+
+关键确认：
+- 云测接口是第三方差点认证机构 API
+- 申请时一次性验证，保存 Token
+- 5 年数据来源本地 SQLite + 增量同步
+- 雷达图维度：开球距离、杆数稳定性、果岭命中率、推杆、救球
+- 会员等级按差点指数分级（bronze/silver/gold/platinum）
+- Token 有效期 1 年，提前 30 天提醒续期
+
+### 第二步：头脑风暴 — `/ce:brainstorm`
+
+授权验证方案：选定方案 A（申请页 → 填写认证码 → 调用云测 API → 写本地 DB → 显示会员状态）
+
+数据展示方案：选定方案 B（统一使用 Recharts，与现有 React 技术栈一致）
+
+数据模型方案：选定方案 C（独立 `association_member` 表 + `performance_metrics` 表，职责分离清晰）
+
+### 第三步：制定计划 — `/writing-plans`
+
+**数据模型：**
+
+- `association_member` 表：user_id, certification_token, handicap_index, member_level, cloud_verify_status, joined_at, expires_at
+- `performance_metrics` 表：user_id, year, avg_score, avg_distance, green_hit_rate, putt_avg, scramble_rate, penalty_rate
+
+**API 设计：**
+
+| 方法 | 路径 | 说明 |
+| --- | --- | --- |
+| POST | /api/association/apply | 申请入会，调用云测验证 |
+| GET | /api/association/profile | 获取会员信息和摘要 |
+| GET | /api/association/performance | 获取 5 年数据 |
+| GET | /api/association/radar | 获取雷达图数据 |
+
+**雷达图维度：** 开球距离、稳定性、果岭命中率、推杆表现、救球率、罚杆控制（全部 normalize 到 0-100）
+
+**排期估算：** API 2天 + 前端 3天 + 图表 1天 + 联调 2天 = 总计 8 天
+
+### 第四步：技术方案细化 — `/ce:plan`
+
+数据库迁移脚本、后端 API 实现、前端组件结构（ApplyPage、ProfilePage、FiveYearChart、RadarChart、MemberBadge、VerifyStatus）
+
+### 第五步：执行开发 — `/ce:work`
+
+worktree 并行开发，各 PR 独立推进。

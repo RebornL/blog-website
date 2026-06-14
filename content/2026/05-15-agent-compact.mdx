@@ -1,0 +1,49 @@
+---
+title: "Context Compaction — 上下文压缩"
+date: "2026-05-15"
+tags: ["AI", "Agent", "Context", "Compaction", "nanoAgent"]
+---
+
+## 核心概念
+
+**Context Compaction** 解决 Agent 在长任务中因历史消息过多导致性能下降的问题。
+
+### 为什么需要压缩
+
+- Agent 的 `messages` 列表在多轮工具调用后持续膨胀
+- 前面所有工具调用结果都被一次次带着走
+- 最终撑爆 context window，回答越来越含糊
+
+### 压缩策略
+
+1. **旧消息摘要化**：将早期消息交给 LLM 生成摘要
+2. **保留最近窗口**：保留最近 N 条消息不压缩（`KEEP_RECENT`）
+3. **不切断 tool 调用组**：tool 响应必须与触发它的 assistant tool_call 保持完整
+
+### 核心参数
+
+- `COMPACT_THRESHOLD`：触发压缩的消息数量阈值
+- `KEEP_RECENT`：至少保留最近几条消息
+
+### 压缩流程
+
+```
+messages = [system, msg1, msg2, ..., msgN]
+↓ 超过阈值
+old_messages = msg1 ~ msgK（需要压缩）
+recent_messages = msgK+1 ~ msgN（保留原样）
+↓ LLM 摘要 old_messages
+result = [system, summary, recent_messages]
+```
+
+### 与 Memory 的关系
+
+- Compaction 关注**会话内**的上下文控制
+- Memory 关注**跨会话**的持久化
+- 两者互补而非替代
+
+### 工程折中
+
+- 压缩本身也消耗 token，不是零成本
+- 更大的 context window 并非根本解决方案
+- 摘要过度会丢失关键路径与文件名，需要平衡

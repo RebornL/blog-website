@@ -1,0 +1,37 @@
+---
+title: "鸿蒙相关命令记录"
+date: "2024-08-04"
+tags: ["HarmonyOS", "HiDumper", "Debug"]
+---
+
+## HiDumper 命令
+
+### 查看界面节点树
+
+```bash
+hdc shell param set persist.ace.debug.enabled 1   # 开启 ArkUI debug 模式
+hdc shell hidumper -s WindowManagerService -a '-a' # 查看 winId
+hdc shell hidumper -s WindowManagerService -a '-w [winId] -element -c'
+hdc shell find /data/ -name arkui.dump
+hdc file recv /data/.../arkui.dump .               # 获取文件到本地
+```
+
+### 查看内存信息
+
+```bash
+hdc shell hidumper -s WindowManagerService -a '-a'  # 获取 pid
+hdc shell hidumper --mem [pid]                       # 查看内存
+```
+
+主要关注 PSS (Proportional Set Size) Total 一列。
+
+### 查看 CPU 信息
+
+```bash
+hdc shell hidumper --cpuusage [pid]  # 查看 CPU 使用率
+```
+
+主要关注：
+- Total Usage：总 CPU 使用率
+- User Space：用户程序运行空间
+- Kernel Space：内核运行空间

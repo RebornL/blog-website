@@ -1,0 +1,51 @@
+---
+title: "gstack + Compound Engineering + superpowers 三工具结合指南"
+date: "2026-04-18"
+tags: ["AI", "gstack", "Compound Engineering", "superpowers", "Workflow"]
+---
+
+## 三者定位对比
+
+| 维度 | gstack | Compound Engineering | superpowers |
+| --- | --- | --- | --- |
+| 来源 | Garry Tan（YC总裁）开源 | Every.inc 开源 | Claude Code 内置 |
+| 核心理念 | 把 Claude Code 变成虚拟工程团队 | 每轮工作都让下一轮更容易（知识复利） | 结构化开发纪律和流程质量 |
+| 入口命令 | `/office-hours`、`/review`、`/qa` | `/ce:brainstorm`、`/ce:plan`、`/ce:review` | `/brainstorming`、`/writing-plans`、`/debug` |
+| 核心特色 | 真实浏览器 QA、设计 shotgun→HTML | 50+ 专业化子 agent、知识复利 | TDD、git worktree、验证流程 |
+| 审查深度 | 强（多角色分工） | 最强（50+ 专业 agent） | 中（结构化流程） |
+| 浏览器能力 | 最强（GStack Browser + 真实浏览器） | 中（`/test-browser`） | 依赖外部 MCP |
+
+## 完整开发流程
+
+### 阶段一：需求定义（Think）
+
+1. `/office-hours` — YC 风格产品追问，输出产品重新定义文档
+2. `/ce:brainstorm` — 交互式需求探索，生成 `requirements.md`
+
+### 阶段二：方案设计（Plan）
+
+3. `/writing-plans` — 结构化输出方案文档，含验收标准和关键假设
+4. `/plan-ceo-review` — CEO 视角挑战范围，砍掉非核心功能
+5. `/plan-eng-review` — 技术架构审查，锁定数据流和组件职责
+6. `/ce:plan` — 技术方案细化，拆分成独立可提交的工作单元
+
+### 阶段三：开发执行（Build）
+
+7. `/ce:work` — worktree 并行开发
+8. `/test-driven-development` — TDD 开发流程（superpowers）
+
+### 阶段四：审查（Review）
+
+9. `/ce:review` — 50+ Agent 专业审查
+10. `/review` — gstack 代码审查，自动修复明显问题
+
+### 阶段五：测试（Test）
+
+11. `/qa <staging-url>` — 真实浏览器 E2E 测试
+
+### 阶段六：发布（Ship）
+
+12. `/ce:compound` — 知识复利记录
+13. `/ship` — 发布到 PR
+14. `/verification-before-completion` — 上线前验证
+15. `/land-and-deploy` — 合并并部署

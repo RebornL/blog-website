@@ -1,0 +1,79 @@
+---
+title: "数据结构与算法经典问题解析--第五章（队列）"
+date: "2018-11-10"
+tags: ["Algorithm", "Data Structure", "Queue"]
+---
+
+## 队列
+
+队列是一种 FIFO（先进先出）的线性表，只允许在队尾插入，队首删除。
+
+### 基本概念
+- **入队（EnQueue）**：在队列中插入元素
+- **出队（DeQueue）**：从队列中删除元素
+- **下溢（underflow）**：对空队列执行出队
+- **溢出（overflow）**：对满队列执行入队
+
+### 应用场景
+- 操作系统相同优先级任务调度
+- 多道程序设计
+- 异步数据传输
+
+### 循环数组实现
+
+```java
+public class ArrayQueue {
+    private int front, rear, capacity;
+    private int[] array;
+
+    public boolean isEmpty() { return front == -1; }
+    public boolean isFull() { return (rear + 1) % capacity == front; }
+    public int getQueueSize() { return (capacity - front + rear + 1) % capacity; }
+
+    public void enQueue(int data) {
+        if (isFull()) throw new QueueOverflowException("Queue Overflow");
+        rear = (rear + 1) % capacity;
+        array[rear] = data;
+        if (front == -1) front = rear;
+    }
+
+    public int deQueue() {
+        if (isEmpty()) throw new EmptyQueueException("Queue Empty");
+        int data = array[front];
+        if (front == rear) { front = rear = -1; }
+        else { front = (front + 1) % capacity; }
+        return data;
+    }
+}
+```
+
+## 经典问题
+
+### 1. 两个栈实现队列
+- **入队**：压入 S1
+- **出队**：S2 为空时将 S1 全部倒入 S2，弹出 S2 栈顶
+
+### 2. 两个队列实现栈
+- **入栈**：哪个非空入哪个
+- **出栈**：将非空队列中 n-1 个元素移到另一个队列，最后一个出队
+
+### 3. 检查栈中相邻数字是否连续
+
+```java
+public static boolean checkStackPairwiseOrder(Stack<Integer> s) {
+    Queue<Integer> q = new LinkedList<>();
+    boolean pairwiseOrdered = true;
+    // 逆置栈元素
+    while (!s.isEmpty()) q.add(s.pop());
+    while (!q.isEmpty()) s.push(q.remove());
+    // 检查相邻元素
+    while (!s.isEmpty()) {
+        int n = s.pop(); q.add(n);
+        if (!s.isEmpty()) {
+            int m = s.pop(); q.add(m);
+            if (Math.abs(n - m) != 1) pairwiseOrdered = false;
+        }
+    }
+    return pairwiseOrdered;
+}
+```

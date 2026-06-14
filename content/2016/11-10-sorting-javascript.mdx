@@ -1,0 +1,82 @@
+---
+title: "排序算法（JavaScript版）"
+date: "2016-11-10"
+tags: ["Algorithm", "Sorting", "JavaScript"]
+---
+
+## 冒泡排序
+
+```javascript
+function bubbleSort(arr) {
+    var len = arr.length;
+    for (var i = 0; i < len; i++) {
+        for (var j = 1; j < len - i; j++) {
+            if (arr[j - 1] > arr[j]) {
+                var temp = arr[j - 1];
+                arr[j - 1] = arr[j];
+                arr[j] = temp;
+            }
+        }
+    }
+    return arr;
+}
+
+// 优化：一次遍历未发生交换则排序完成
+function bubbleSort2(arr) {
+    var len = arr.length;
+    for (var i = 0; i < len; i++) {
+        var flag = 1;
+        for (var j = 1; j < len - i; j++) {
+            if (arr[j - 1] > arr[j]) {
+                var temp = arr[j - 1];
+                arr[j - 1] = arr[j];
+                arr[j] = temp;
+                flag = 0;
+            }
+        }
+        if (flag) return arr;
+    }
+}
+```
+
+## 选择排序
+
+```javascript
+function selectSort(arr) {
+    var len = arr.length;
+    for (var i = 0; i < len - 1; i++) {
+        var min = i;
+        for (var j = i + 1; j < len; j++) {
+            if (arr[min] > arr[j]) min = j;
+        }
+        if (min !== i) {
+            var temp = arr[i];
+            arr[i] = arr[min];
+            arr[min] = temp;
+        }
+    }
+    return arr;
+}
+```
+
+## 插入排序
+
+```javascript
+function insertionSort(arr) {
+    var len = arr.length;
+    for (var i = 1; i < len; i++) {
+        if (arr[i - 1] > arr[i]) {
+            var temp = arr[i];
+            var index = i;
+            for (var j = i - 1; j >= 0; j--) {
+                if (arr[j] > temp) {
+                    arr[j + 1] = arr[j];
+                    index = j;
+                }
+            }
+            arr[index] = temp;
+        }
+    }
+    return arr;
+}
+```

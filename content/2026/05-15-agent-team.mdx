@@ -1,0 +1,39 @@
+---
+title: "Agent Team — 多智能体团队协作"
+date: "2026-05-15"
+tags: ["AI", "Agent", "Team", "nanoAgent"]
+---
+
+## 核心概念
+
+**Agent Team** 将一次性 SubAgent 升级为具备身份、通信与复盘能力的持久团队。
+
+### 三个核心组件
+
+1. **持久身份（Agent 类）**
+   - 有名字（name）和角色（role）
+   - 有独立的 `messages` 列表，跨多次 `chat()` 调用持久保持
+   - 有 `inbox` 通信通道
+
+2. **通信通道（inbox）**
+   - `receive(sender, message)`：点对点接收消息
+   - `send(from_name, to_name, message)`：Team 类转发
+   - `broadcast(from_name, message)`：广播给团队所有其他人
+
+3. **生命周期管理（Team 类）**
+   - `hire(name, role)`：创建持久 Agent
+   - `disband()`：解散团队
+
+### 与 SubAgent 的对比
+
+| 特性 | SubAgent | Agent Team |
+| --- | --- | --- |
+| 生命周期 | 一次性，调用后消亡 | 持久化，跨多次调用存活 |
+| 上下文 | 独立但短暂 | 独立且累积 |
+| 通信 | 无，仅返回结果 | inbox 消息传递 |
+| 身份 | 仅角色字符串 | 有名字、角色、状态 |
+
+### 典型场景
+
+- 开发 + 审查流水线：开发完成后自动转给审查，审查意见反馈回开发
+- 持久 reviewer 角色：二次审查时记得第一次的验收标准

@@ -1,0 +1,28 @@
+---
+title: "鸿蒙性能优化记录"
+date: "2025-06-09"
+tags: ["HarmonyOS", "Performance", "Memory", "CPU"]
+---
+
+## 内存优化
+
+优化应用内存占用：[官方文档](https://gitee.com/harmonyos-cases/cases/blob/master/docs/performance/optimize-application-memory.md)
+
+使用 `@Link` / `@ObjectLink` 替代 `@Prop` 减少内存拷贝。
+
+### 相关命令
+
+```bash
+hidumper --mem ${pidof com.huawei.hmos.health}
+hidumper --mem-jsheap ${pidof com.huawei.hmos.health} --gc
+hidumper --mem-smaps ${pidof com.huawei.hmos.health}
+```
+
+## 时延优化
+
+[时延优化实用准则](https://gitee.com/harmonyos-cases/cases/blob/master/docs/performance/performance-optimization-practical-guidance.md)
+
+## CPU 分析
+
+- [CPU占用分析 hidumper](https://gitee.com/harmonyos-cases/cases/blob/master/docs/performance/performance-optimization-using-hidumper.md)
+- [SmartPerf-Host分析](https://gitee.com/harmonyos-cases/cases/blob/master/docs/performance/performance-optimization-using-smartperf-host.md)
