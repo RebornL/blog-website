@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { Header } from "@/components/Header";
 
 export const metadata: Metadata = {
   title: "Reborn's Blog",
@@ -12,9 +14,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-white text-zinc-900">
-        {children}
+    <html lang="zh-CN" className="h-full antialiased" suppressHydrationWarning>
+      <body className="min-h-full flex flex-col bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+        <ThemeProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+        </ThemeProvider>
       </body>
     </html>
   );
