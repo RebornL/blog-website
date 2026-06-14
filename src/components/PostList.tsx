@@ -15,26 +15,22 @@ export function PostList({ posts }: { posts: PostMeta[] }) {
   const hasMore = visibleCount < posts.length;
 
   if (posts.length === 0) {
-    return (
-      <p className="text-slate-400 italic">
-        No posts yet. Content will appear here after syncing from SiYuan.
-      </p>
-    );
+    return <p className="text-slate-400 italic">No posts yet.</p>;
   }
 
   return (
     <div>
-      <div className="flex flex-col gap-5">
+      <section className="flex w-full flex-col items-stretch gap-6">
         {visiblePosts.map((post) => (
           <PostCard key={post.slug} post={post} />
         ))}
-      </div>
+      </section>
 
       {hasMore && (
         <div className="mt-8 text-center">
           <button
             onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-6 py-3 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-6 py-3 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800 cursor-pointer"
           >
             Load more
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">

@@ -2,6 +2,9 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getPostBySlug, getAdjacentPosts, getAllPostSlugs } from '@/lib/posts';
 import { MdxRenderer } from '@/components/MdxRenderer';
+import { Header } from '@/components/Header';
+import { Container } from '@/components/Container';
+import { Footer } from '@/components/Footer';
 
 interface Props {
   params: Promise<{ slug: string[] }>;
@@ -22,45 +25,44 @@ export default async function PostPage({ params }: Props) {
   const { prev, next } = getAdjacentPosts(slugStr);
 
   return (
-    <div className="container-narrow mx-auto max-w-3xl px-5 py-10">
-      <header className="pb-2">
-        <Link
-          href="/"
-          className="text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
-        >
-          ← Back
-        </Link>
-      </header>
+    <Container className="mx-auto flex max-w-3xl flex-col items-stretch gap-10 px-5 py-10">
+      <Header />
 
-      <article className="pt-6 pb-12">
-        <header className="mb-10">
-          <h1 className="text-2xl font-bold leading-snug tracking-tight text-slate-900 dark:text-white">
+      <article className="mx-auto w-full max-w-2xl pb-10">
+        <header className="mb-8 space-y-6">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-4xl">
             {post.title}
           </h1>
-          {post.date && (
-            <div className="mt-3 flex flex-wrap items-center gap-x-3 text-sm text-slate-500 dark:text-slate-400">
-              <span>{post.date}</span>
-              {post.tags && post.tags.length > 0 && (
-                <>
-                  <span>|</span>
-                  <span>
-                    {post.tags.map((tag, i) => (
-                      <span key={tag}>
-                        {i > 0 && ', '}
-                        {tag}
-                      </span>
-                    ))}
-                  </span>
-                </>
-              )}
-            </div>
-          )}
+          <div className="flex flex-wrap items-center gap-x-3 text-sm text-slate-500 dark:text-slate-400">
+            <span>{post.date}</span>
+            {post.tags && post.tags.length > 0 && (
+              <>
+                <span>·</span>
+                <span>{post.tags.join(', ')}</span>
+              </>
+            )}
+          </div>
         </header>
 
-        <MdxRenderer source={post.content} />
+        <div className="prose prose-slate mx-auto dark:prose-invert">
+          <MdxRenderer source={post.content} />
+        </div>
+
+        {post.tags && post.tags.length > 0 && (
+          <div className="mt-8 flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-block rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
       </article>
 
-      <nav className="pb-20">
+      <nav className="w-full">
         <div className="border-t border-slate-200 dark:border-slate-800 pt-6 flex justify-between text-sm">
           {prev ? (
             <Link
@@ -84,6 +86,8 @@ export default async function PostPage({ params }: Props) {
           )}
         </div>
       </nav>
-    </div>
+
+      <Footer />
+    </Container>
   );
 }
