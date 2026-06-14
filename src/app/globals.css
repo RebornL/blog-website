@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Enable dark mode via class strategy (for next-themes) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Slate palette — matching starter-kit personal theme */
 :root {
   --background: #ffffff;
