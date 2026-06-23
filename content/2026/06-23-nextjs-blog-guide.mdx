@@ -1,0 +1,279 @@
+---
+title: "Next.js 博客搭建全流程"
+date: "2026-06-23"
+tags: ["Next.js", "Blog", "Vercel", "GitHub Actions", "Tailwind", "MDX"]
+---
+
+> 基于 Next.js + MDX + Tailwind CSS + GitHub + Vercel 的极简技术博客方案，内容源为思源笔记。
+
+## 一、整体架构
+
+```
+思源笔记（内容编辑）→ 同步脚本 → MDX 文件（content/）
+                                    ↓
+                            Next.js SSG 构建
+                                    ↓
+                            GitHub 仓库推送
+                                    ↓
+                          Vercel 自动部署
+```
+
+**核心思路：** 思源笔记是内容源，通过 MCP 工具读取文章内容，转换为 MDX 文件存入仓库。Next.js 在构建时将 MDX 渲染为静态页面，部署到 Vercel。
+
+## 二、技术栈
+
+| 层 | 选型 | 理由 |
+| --- | --- | --- |
+| 框架 | Next.js 15 App Router | SSG + ISR |
+| 内容 | MDX（gray-matter + next-mdx-remote） | Markdown + JSX 组件 |
+| 样式 | Tailwind CSS v4 | 原子化 CSS |
+| 暗色模式 | next-themes（class 策略） | 亮/暗切换 |
+| 部署 | Vercel（自定义域名） | 零配置 |
+| CI/CD | GitHub Actions | 自动部署 |
+| 字体 | 系统字体栈 | 零外部请求 |
+
+## 三、项目结构
+
+```
+blog-website/
+├── content/                    # MDX 文章（按 YYYY/MM-DD-slug.mdx）
+├── public/images/              # 静态图片
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx          # 根布局（ThemeProvider）
+│   │   ├── page.tsx            # 首页 — Hero 卡片 + 文章列表
+│   │   ├── archive/page.tsx    # 归档页（按年月分组）
+│   │   ├── tags/page.tsx       # 标签列表页
+│   │   ├── tags/[tag]/page.tsx # 标签文章页
+│   │   ├── search/page.tsx     # 客户端搜索页
+│   │   ├── posts/[...slug]/page.tsx  # 文章详情
+│   │   └── feed.xml/route.ts   # RSS Feed
+│   ├── components/
+│   │   ├── Header.tsx          # 导航栏
+│   │   ├── Footer.tsx          # 页脚
+│   │   ├── PostCard.tsx        # 文章卡片
+│   │   ├── PostList.tsx        # 文章列表（Load More）
+│   │   ├── ToggleTheme.tsx     # 暗色模式切换
+│   │   ├── ThemeProvider.tsx   # 主题 Provider
+│   │   ├── Container.tsx       # 布局容器
+│   │   └── MdxRenderer.tsx     # MDX 渲染器
+│   ├── lib/
+│   │   ├── posts.ts            # 文章读取（fs + gray-matter）
+│   │   └── posts-data.ts       # 客户端搜索逻辑
+│   └── types/
+│       └── index.ts            # Post/PostMeta 类型
+├── .github/workflows/deploy.yml  # GitHub Actions 自动部署
+├── vercel.json                 # Vercel 项目配置
+└── package.json
+```
+
+## 四、页面设计
+
+### 首页 `/`
+
+- **Hero 卡片**：头像 + 姓名 + 简介 + 文章总数
+- **文章列表**：卡片式布局，圆角边框，hover 高亮
+- **分页**：Load More 按钮
+- **Footer**：Archive / RSS / GitHub 链接
+
+### 归档页 `/archive`
+
+- 按**年月分组**（如 2026 → January / February）
+- 每个月份下列出文章标题和日期
+
+### 标签页 `/tags`
+
+- 标签云展示
+- 点击进入 `/tags/[tag]` 查看文章列表
+
+### 搜索页 `/search`
+
+- 客户端实时搜索（标题 + 标签）
+- 搜索结果卡片展示
+
+### 文章详情 `/posts/[...slug]`
+
+- 标题 + 日期 + 标签（药丸样式）
+- MDX 渲染正文（prose 排版）
+- 底部前后文章导航
+
+### RSS `/feed.xml`
+
+- Atom 格式 RSS Feed
+
+## 五、样式设计要点
+
+### 配色
+
+- 亮色：slate 灰度系（`#0f172a` 文字，`#ffffff` 背景）
+- 暗色：`dark:bg-slate-950`，`dark:text-slate-100`
+- 主色：`blue-600`（链接）
+- 代码块：`#f0efed` 背景（暗色 `#24292e`）
+
+### 排版
+
+- 字体：系统字体栈
+- 正文：17px，行高 1.8
+- 标题：`text-3xl font-bold`（h1），`text-2xl font-semibold`（文章卡片）
+
+### Tailwind v4 暗色模式配置
+
+```css
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+```
+
+配合 `next-themes` 的 `ThemeProvider`：
+
+```tsx
+<ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+  {children}
+</ThemeProvider>
+```
+
+### 暗色切换按钮
+
+Sun/Moon 图标通过 CSS 显隐切换：
+
+```tsx
+<Sun className="dark:hidden" />
+<Moon className="hidden dark:block" />
+```
+
+## 六、文章同步方案
+
+### 从思源导出
+
+通过思源 MCP 工具批量读取笔记本下的所有文章：
+
+1. `search(action="query_sql")` 获取所有文档 ID 和元数据
+2. `fs(action="read")` 逐篇读取 markdown 内容
+3. 转换为 MDX 文件（添加 frontmatter：title, date, tags）
+4. 按 `content/YYYY/MM-DD-slug.mdx` 写入
+
+### frontmatter 格式
+
+```yaml
+---
+title: "文章标题"
+date: "2026-04-12"
+tags: ["AI", "LangChain", "RAG"]
+---
+```
+
+## 七、核心代码
+
+### 文章读取（posts.ts）
+
+```typescript
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+
+const CONTENT_DIR = path.join(process.cwd(), 'content');
+
+export function getAllPosts(): Post[] {
+  const slugs = getAllPostSlugs();
+  return slugs.map(getPostBySlug).filter((p): p is Post => p !== null)
+    .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+}
+
+export function getPostBySlug(slug: string): Post | null {
+  const filePath = path.join(CONTENT_DIR, `${slug}.mdx`);
+  if (!fs.existsSync(filePath)) return null;
+  const raw = fs.readFileSync(filePath, 'utf-8');
+  const { data, content } = matter(raw);
+  return {
+    title: data.title,
+    date: data.date,
+    slug,
+    tags: data.tags || [],
+    content,
+    year: (data.date || '').slice(0, 4),
+  };
+}
+```
+
+### 标签页静态生成
+
+```typescript
+export async function generateStaticParams() {
+  const tags = getAllTags();
+  return tags.map((tag) => ({ tag: encodeURIComponent(tag) }));
+}
+```
+
+### 首页（SSG）
+
+```typescript
+export default function HomePage() {
+  const posts = getAllPostMetas();
+  return (
+    <Container>
+      <Header />
+      <div className="rounded-lg border border-slate-200 p-6 ...">
+        {/* author info + about */}
+      </div>
+      <PostList posts={posts} />
+      <Footer />
+    </Container>
+  );
+}
+```
+
+## 八、部署配置
+
+### Vercel
+
+```json
+{
+  "project": "blog-website",
+  "framework": "nextjs",
+  "buildCommand": "npm run build"
+}
+```
+
+### GitHub Actions 自动部署
+
+```yaml
+name: Deploy to Vercel
+on:
+  push:
+    branches: [master]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run build
+      - run: npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+```
+
+### 自定义域名
+
+1. `vercel domains add <domain>` 添加域名
+2. DNS 添加 A 记录 → `76.76.21.21`
+3. Vercel 自动签发 SSL 证书
+
+## 九、注意事项
+
+1. **Tailwind v4 暗色模式**必须添加 `@custom-variant dark` 才能配合 `next-themes` 的 class 策略
+2. **搜索页**需要拆分 Server/Client Component，客户端组件不能直接 import 服务端模块（fs）
+3. **标签页的 `generateStaticParams`** 要过滤掉以 `.` 开头的 tag（如 `.gitignore`），避免路径冲突
+4. **Vercel 新项目默认开启 SSO Protection**，需要在 Dashboard 手动关闭
+5. **MDX 中的 `<` `>` 符号**可能导致编译错误，需要用 `&lt;` `&gt;` 转义
+6. **GitHub Actions 需要配置 Secrets**：`VERCEL_TOKEN` 从 Vercel Dashboard 创建
+
+## 十、后续可扩展功能
+
+- 评论系统（Giscus）
+- 全文搜索（fuse.js 已集成）
+- 阅读时间估算
+- OG 图片生成
+- Newsletter 订阅
+- 文章分类过滤
+- 移动端侧边栏菜单
